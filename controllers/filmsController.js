@@ -129,9 +129,14 @@ router.delete('/film/:name',auth,(req,res)=>{
 
 //atualiza o filme específico na base de dados
 router.put('/film/:name',upload,auth,(req,res)=>{
-   var {titulo, lancamento, descricao, imagem} = req.body
+   var {titulo, lancamento, descricao} = req.body
    var name = req.params.name
    var err
+   var image
+   if(req.file){
+      image = __dirname+'/images/'+req.file.filename  
+      image = image.replace("\\controllers","")
+   }
   filmController.findOne({where:{titulo: name}}).then(film =>{
        if(film){  
            err = FieldValidator(titulo, lancamento, descricao)
@@ -142,7 +147,7 @@ router.put('/film/:name',upload,auth,(req,res)=>{
            film.titulo = titulo
            film.lancamento = lancamento 
            film.descricao = descricao
-           film.imagem = imagem
+           film.imagem = image
            
            film.save()
            res.statusCode = 200
